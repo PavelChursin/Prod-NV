@@ -1,0 +1,915 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NeuroVision B2B GTM Research Dashboard</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --ink: #172033;
+      --muted: #667085;
+      --line: #dbe3ee;
+      --panel: #ffffff;
+      --panel-2: #eef4fb;
+      --accent: #0a7f83;
+      --accent-2: #c44c31;
+      --accent-3: #7566b1;
+      --accent-4: #1e6aa8;
+      --good: #107a4d;
+      --warn: #ad5d00;
+      --shadow: 0 18px 40px rgba(17, 30, 54, .09);
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        linear-gradient(180deg, #eaf0f7 0, rgba(234, 240, 247, 0) 360px),
+        var(--bg);
+    }
+    a { color: inherit; }
+    .shell { width: min(1180px, calc(100% - 36px)); margin: 0 auto; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid rgba(219, 227, 238, .86);
+      background: rgba(246, 248, 251, .88);
+      backdrop-filter: blur(18px);
+    }
+    .topbar .shell {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 62px;
+      gap: 18px;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 760; }
+    .mark {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border: 1px solid #95cacc;
+      background: #dff4f4;
+      color: #075f62;
+      font-size: 15px;
+    }
+    nav { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
+    nav a {
+      padding: 9px 10px;
+      color: #425166;
+      text-decoration: none;
+      font-size: 13px;
+      border-radius: 6px;
+    }
+    nav a:hover { background: #e8eef6; color: #182538; }
+
+    .hero {
+      min-height: calc(100vh - 62px);
+      display: grid;
+      align-items: center;
+      padding: 54px 0 34px;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, .98fr) minmax(380px, .78fr);
+      gap: 46px;
+      align-items: center;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 18px;
+      color: #425166;
+      font-size: 13px;
+      font-weight: 680;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 34px;
+      height: 2px;
+      background: var(--accent);
+    }
+    h1 {
+      margin: 0;
+      max-width: 720px;
+      font-size: clamp(38px, 5.1vw, 64px);
+      line-height: 1.02;
+      letter-spacing: 0;
+    }
+    .hero-lead {
+      margin: 20px 0 0;
+      max-width: 690px;
+      color: #425166;
+      font-size: clamp(17px, 1.55vw, 20px);
+      line-height: 1.45;
+    }
+    .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 24px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 16px;
+      border: 1px solid #b7c4d4;
+      border-radius: 6px;
+      background: #fff;
+      color: #1f2b3d;
+      text-decoration: none;
+      font-weight: 720;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .btn.primary { border-color: #086a6d; background: #086f72; color: #fff; }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(18, 32, 55, .12); }
+
+    .hero-panel {
+      background: #0f2532;
+      color: #fff;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,.12);
+      align-self: center;
+      transform: translateY(-18px);
+    }
+    .hero-panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 18px 0;
+      color: #b6d2da;
+      font-size: 13px;
+    }
+    .hero-metric {
+      padding: 22px 18px 8px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .hero-metric strong {
+      display: block;
+      font-size: clamp(34px, 4vw, 50px);
+      letter-spacing: 0;
+      line-height: .92;
+    }
+    .hero-metric span { display: block; color: #c4d7df; font-size: 13px; line-height: 1.35; margin-top: 9px; }
+    .market-bars { padding: 10px 18px 20px; }
+    .bar-row { margin-top: 18px; }
+    .bar-row header { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: #dce9ee; }
+    .bar-track { height: 12px; margin-top: 8px; background: rgba(255,255,255,.12); border-radius: 999px; overflow: hidden; }
+    .bar-fill { height: 100%; background: linear-gradient(90deg, #36b7a8, #f0b35a); border-radius: inherit; }
+    .hero-notes {
+      padding: 16px 18px 18px;
+      background: rgba(255,255,255,.06);
+      display: grid;
+      gap: 10px;
+    }
+    .hero-note { display: grid; grid-template-columns: 26px 1fr; gap: 9px; color: #d9e9ee; font-size: 13px; line-height: 1.35; }
+    .hero-note b { color: #fff; }
+
+    section { padding: 72px 0; }
+    .section-head { display: grid; grid-template-columns: minmax(0, .72fr) minmax(280px, .28fr); gap: 34px; align-items: end; margin-bottom: 24px; }
+    .section-head h2 { margin: 0; font-size: clamp(30px, 4vw, 48px); line-height: 1; letter-spacing: 0; }
+    .section-head p { margin: 0; color: #5d6a7d; line-height: 1.55; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 8px 22px rgba(17, 30, 54, .05);
+    }
+    .metric-card { padding: 18px; min-height: 160px; display: flex; flex-direction: column; justify-content: space-between; }
+    .metric-card .label { color: #5b697c; font-size: 13px; line-height: 1.35; }
+    .metric-card .value { margin-top: 12px; font-size: clamp(30px, 4vw, 46px); font-weight: 790; letter-spacing: 0; line-height: .98; }
+    .metric-card .note { margin-top: 10px; color: #667085; font-size: 13px; line-height: 1.38; }
+    .accent-a { border-top: 4px solid var(--accent); }
+    .accent-b { border-top: 4px solid var(--accent-2); }
+    .accent-c { border-top: 4px solid var(--accent-3); }
+    .accent-d { border-top: 4px solid var(--accent-4); }
+
+    .insight-grid { display: grid; grid-template-columns: minmax(0, .82fr) minmax(320px, .48fr); gap: 14px; }
+    .statement { padding: 24px; background: #10242f; color: #fff; }
+    .statement h3 { margin: 0; font-size: clamp(26px, 3.6vw, 44px); line-height: 1.04; letter-spacing: 0; }
+    .statement p { margin: 18px 0 0; color: #c7d9df; line-height: 1.55; font-size: 17px; }
+    .bullets { padding: 20px; display: grid; gap: 12px; }
+    .bullet { display: grid; grid-template-columns: 34px 1fr; gap: 10px; align-items: start; color: #475569; line-height: 1.45; }
+    .bullet i {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      background: #e1f4f2;
+      color: #067579;
+      border: 1px solid #bde1df;
+      border-radius: 6px;
+      font-style: normal;
+      font-weight: 800;
+    }
+    .bullet b { display: block; color: var(--ink); margin-bottom: 2px; }
+
+    .tabs { display: flex; gap: 8px; overflow-x: auto; padding: 3px 0 15px; }
+    .tab {
+      border: 1px solid #c8d3df;
+      background: #fff;
+      color: #435267;
+      border-radius: 6px;
+      padding: 10px 13px;
+      white-space: nowrap;
+      cursor: pointer;
+      font-weight: 720;
+      font-size: 13px;
+    }
+    .tab.active { background: #0b7275; border-color: #0b7275; color: #fff; }
+
+    .segment-layout { display: grid; grid-template-columns: 310px minmax(0, 1fr); gap: 14px; }
+    .segment-list { padding: 12px; display: grid; gap: 7px; max-height: 640px; overflow: auto; }
+    .segment-button {
+      width: 100%;
+      border: 1px solid transparent;
+      background: transparent;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+      text-align: left;
+      padding: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #344054;
+      font-weight: 680;
+    }
+    .segment-button small { color: #667085; font-weight: 650; }
+    .segment-button.active { background: #e5f4f2; border-color: #a9d6d2; color: #075f62; }
+    .segment-detail { padding: 22px; min-height: 640px; }
+    .segment-detail h3 { margin: 0 0 6px; font-size: clamp(26px, 3vw, 38px); letter-spacing: 0; }
+    .segment-detail .proxy { color: #5d6a7d; line-height: 1.45; max-width: 820px; }
+    .detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; margin-top: 18px; }
+    .detail-box { background: var(--panel-2); border: 1px solid #d7e2ec; padding: 14px; border-radius: 6px; }
+    .detail-box span { display: block; color: #617085; font-size: 12px; font-weight: 780; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
+    .detail-box p { margin: 0; color: #303b4d; line-height: 1.44; }
+    .score-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 18px; }
+    .score { padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 6px; }
+    .score label { display: block; font-size: 12px; color: #667085; margin-bottom: 8px; }
+    .score .track { height: 8px; background: #e4eaf2; border-radius: 99px; overflow: hidden; }
+    .score .fill { height: 100%; background: #0d7f82; }
+
+    .chart-card { padding: 18px; }
+    .chart-card h3 { margin: 0 0 16px; font-size: 20px; }
+    .market-chart { display: grid; gap: 18px; }
+    .market-row {
+      display: grid;
+      grid-template-columns: 190px 1fr 130px;
+      gap: 16px;
+      align-items: center;
+    }
+    .market-row .name { font-weight: 760; }
+    .market-row .numbers { font-size: 13px; color: #667085; text-align: right; }
+    .market-duo { height: 30px; position: relative; background: #e8eef6; border-radius: 6px; overflow: hidden; }
+    .market-duo .now { position: absolute; inset: 0 auto 0 0; background: #7fb9c4; }
+    .market-duo .future { position: absolute; inset: 0 auto 0 0; background: rgba(10, 127, 131, .82); mix-blend-mode: multiply; }
+    .legend { display: flex; gap: 14px; flex-wrap: wrap; color: #667085; font-size: 13px; margin-top: 14px; }
+    .legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 6px; border-radius: 2px; vertical-align: -1px; }
+    .legend .now::before { background: #7fb9c4; }
+    .legend .future::before { background: #0a7f83; }
+
+    .trend-timeline { display: grid; gap: 12px; }
+    .trend { display: grid; grid-template-columns: 72px 1fr; gap: 14px; align-items: start; padding: 16px; }
+    .trend .num { color: #0b7275; font-size: 26px; font-weight: 790; }
+    .trend h3 { margin: 0 0 6px; font-size: 19px; }
+    .trend p { margin: 0; color: #56657a; line-height: 1.45; }
+
+    .geo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .geo-card { padding: 18px; display: grid; gap: 12px; }
+    .geo-card h3 { margin: 0; font-size: 22px; }
+    .geo-card p { margin: 0; color: #56657a; line-height: 1.45; }
+    .geo-card .rank { color: #0b7275; font-weight: 850; font-size: 13px; }
+
+    .channel-board { display: grid; grid-template-columns: minmax(0, .68fr) minmax(320px, .32fr); gap: 14px; align-items: start; }
+    .channel-bars { padding: 18px; display: grid; gap: 12px; }
+    .channel-row {
+      display: grid;
+      grid-template-columns: 140px 1fr 90px;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+    }
+    .channel-bar { height: 10px; background: #e6edf5; border-radius: 99px; overflow: hidden; }
+    .channel-bar span { display: block; height: 100%; background: #0a7f83; }
+    .channel-row small { color: #667085; text-align: right; }
+    .filter-note { padding: 18px; }
+    .filter-note h3 { margin: 0 0 8px; }
+    .filter-note p { color: #56657a; line-height: 1.45; margin: 0 0 14px; }
+
+    .table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--line); background: #fff; }
+    table { width: 100%; border-collapse: collapse; min-width: 760px; }
+    th, td { padding: 12px 13px; border-bottom: 1px solid #e3e9f2; text-align: left; vertical-align: top; font-size: 13px; line-height: 1.38; }
+    th { background: #edf3fa; color: #344054; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; }
+    tr:last-child td { border-bottom: 0; }
+
+    details {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      margin-top: 12px;
+      overflow: hidden;
+    }
+    summary {
+      cursor: pointer;
+      padding: 16px 18px;
+      font-weight: 790;
+      color: #263247;
+      background: #f0f5fa;
+    }
+    .details-body { padding: 18px; color: #455267; line-height: 1.55; }
+    .pill-list { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pill { border: 1px solid #c7d5df; background: #fff; border-radius: 999px; padding: 7px 10px; color: #475569; font-size: 13px; }
+    .priority-list { counter-reset: item; display: grid; gap: 10px; }
+    .priority {
+      counter-increment: item;
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 13px;
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 6px;
+    }
+    .priority::before {
+      content: counter(item);
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      background: #10242f;
+      color: #fff;
+      border-radius: 6px;
+      font-weight: 850;
+    }
+    .priority b { display: block; margin-bottom: 4px; }
+    .priority span { color: #5d6a7d; line-height: 1.42; }
+
+    .source-frame {
+      width: 100%;
+      min-height: 540px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+    .method-list { display: grid; gap: 12px; }
+    .method-item { padding: 16px; }
+    .method-item b { display: block; margin-bottom: 7px; }
+    .method-item p { margin: 0; color: #5d6a7d; line-height: 1.45; }
+    footer { padding: 34px 0 54px; color: #667085; font-size: 13px; }
+
+    @media (max-width: 900px) {
+      .topbar .shell { align-items: flex-start; flex-direction: column; padding: 12px 0; }
+      nav { justify-content: flex-start; }
+      .hero { min-height: auto; padding-top: 36px; }
+      .hero-grid, .section-head, .insight-grid, .segment-layout, .channel-board, .geo-grid { grid-template-columns: 1fr; }
+      .hero-panel { transform: none; }
+      h1 { max-width: 780px; font-size: clamp(38px, 8vw, 58px); }
+      .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr 1fr; }
+      .segment-detail { min-height: auto; }
+      .market-row { grid-template-columns: 1fr; gap: 7px; }
+      .market-row .numbers { text-align: left; }
+    }
+    @media (max-width: 620px) {
+      .shell { width: min(100% - 24px, 1180px); }
+      nav a { font-size: 12px; padding: 7px 8px; }
+      section { padding: 48px 0; }
+      .grid-4, .grid-3, .grid-2, .detail-grid, .score-strip { grid-template-columns: 1fr; }
+      .hero-metric { grid-template-columns: 1fr; }
+      .channel-row { grid-template-columns: 1fr; gap: 6px; }
+      .channel-row small { text-align: left; }
+      .trend { grid-template-columns: 1fr; }
+      .btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell">
+      <div class="brand"><span class="mark">NV</span> NeuroVision Research</div>
+      <nav aria-label="Навигация">
+        <a href="#overview">Обзор</a>
+        <a href="#results">Результаты</a>
+        <a href="#segments">Сегменты</a>
+        <a href="#channels">Каналы</a>
+        <a href="#details">Детали</a>
+        <a href="#methodology">Методология</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="hero">
+      <div class="shell hero-grid">
+        <div>
+          <p class="eyebrow">Исследование B2B-лидогенерации</p>
+          <h1>NeuroVision должен продавать trust-инфраструктуру, а не распознавание лица</h1>
+          <p class="hero-lead">Главная идея исследования: strongest wedge находится на пересечении compliance, fraud prevention и onboarding automation. Самые быстрые сегменты для pipeline: fintech, crypto/CASP, gambling/betting, digital lending/MFO и marketplaces.</p>
+          <div class="hero-actions">
+            <a class="btn primary" href="#results">Смотреть выводы</a>
+            <a class="btn" href="#full-report">Полный отчет</a>
+          </div>
+        </div>
+
+        <aside class="hero-panel" aria-label="Ключевые метрики">
+          <div class="hero-panel-head">
+            <span>Ключевая визуализация</span>
+            <span>рынки к 2030</span>
+          </div>
+          <div class="hero-metric">
+            <div><strong>2.0x</strong><span>Identity Verification: $14.34B в 2025 до $29.32B к 2030</span></div>
+            <div><strong>5.4x</strong><span>KYC Software: $2.93B в 2021 до $15.81B к 2030</span></div>
+          </div>
+          <div class="market-bars">
+            <div class="bar-row">
+              <header><span>Identity Verification</span><b>$29.32B</b></header>
+              <div class="bar-track"><div class="bar-fill" style="width:45%"></div></div>
+            </div>
+            <div class="bar-row">
+              <header><span>KYC Software</span><b>$15.81B</b></header>
+              <div class="bar-track"><div class="bar-fill" style="width:24%"></div></div>
+            </div>
+            <div class="bar-row">
+              <header><span>Fraud Detection</span><b>$65.68B</b></header>
+              <div class="bar-track"><div class="bar-fill" style="width:100%"></div></div>
+            </div>
+          </div>
+          <div class="hero-notes">
+            <div class="hero-note"><span>01</span><span><b>AI-fraud стал главным поводом.</b> Deepfakes уже составляют 20% biometric fraud attempts.</span></div>
+            <div class="hero-note"><span>02</span><span><b>ROI нужен за 1-2 квартала.</b> Лучшие сегменты имеют регуляторную неизбежность и короткий цикл сделки.</span></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="overview">
+      <div class="shell">
+        <div class="section-head">
+          <h2>Обзор исследования</h2>
+          <p>Контекст, методология и входные данные вынесены наверх, чтобы было ясно, что именно анализировалось и где данных не хватает.</p>
+        </div>
+        <div class="grid-4">
+          <article class="card metric-card accent-a"><div><div class="label">Покрытие продукта</div><div class="value">10k+</div></div><div class="note">типов документов, 200+ стран, 90+ языков; в источниках встречается также 240+ стран.</div></article>
+          <article class="card metric-card accent-b"><div><div class="label">Точность face recognition</div><div class="value">99.74%</div></div><div class="note">заявление NeuroVision; независимый бенчмарк в исследовании не указан.</div></article>
+          <article class="card metric-card accent-c"><div><div class="label">Экономика внедрения</div><div class="value">$0.25+</div></div><div class="note">from $0.25, pay-as-you-go без подписки, три попытки в цене одной проверки.</div></article>
+          <article class="card metric-card accent-d"><div><div class="label">Запуск</div><div class="value">1 день</div></div><div class="note">заявленная интеграция за один рабочий день; доступно cloud и on-prem.</div></article>
+        </div>
+
+        <div class="insight-grid" style="margin-top:14px">
+          <article class="card statement">
+            <h3>Формула ценности: сохранять платный трафик, снижать FTE, штрафы и outflow от AI-fraud.</h3>
+            <p>Исследование рекомендует связать продукт с EBITDA и unit economics: time-to-approve, approval/pass rate, verification completion, manual review share, cost per approved customer и fraud rate at onboarding.</p>
+          </article>
+          <aside class="card bullets">
+            <div class="bullet"><i>1</i><div><b>Контекст</b>NeuroVision уже выглядит как full-stack digital identity platform: eKYC, documents, face match, liveness, AML, authentication, video analytics.</div></div>
+            <div class="bullet"><i>2</i><div><b>Методология</b>Desk research по публичным источникам, конкурентам, регуляторике, рынкам и заявленным продуктовым proof points.</div></div>
+            <div class="bullet"><i>3</i><div><b>Ограничение</b>Размер выборки в смысле customer survey не указан. Прямой TAM KYC по ряду отраслей заменен market proxy.</div></div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section id="results">
+      <div class="shell">
+        <div class="section-head">
+          <h2>Ключевые результаты</h2>
+          <p>Главные рынки, риски и закономерности показаны визуально. Числа взяты из исследования; где это market proxy, подпись сохранена.</p>
+        </div>
+        <div class="grid-2">
+          <article class="card chart-card">
+            <h3>Рост бюджетных категорий</h3>
+            <div class="market-chart" id="marketChart"></div>
+            <div class="legend"><span class="now">текущий размер</span><span class="future">прогноз</span></div>
+          </article>
+          <article class="card chart-card">
+            <h3>Шоковые факторы спроса</h3>
+            <div class="grid-2">
+              <div class="metric-card card accent-b"><div><div class="label">deepfake attempts</div><div class="value">+2137%</div></div><div class="note">рост в финансовых институтах за три года по Signicat.</div></div>
+              <div class="metric-card card accent-a"><div><div class="label">biometric fraud</div><div class="value">20%</div></div><div class="note">deepfakes уже одна из пяти попыток биометрического мошенничества.</div></div>
+              <div class="metric-card card accent-c"><div><div class="label">deepfake-selfies</div><div class="value">+58%</div></div><div class="note">рост за 2025 год, плюс injection attacks +40% YoY.</div></div>
+              <div class="metric-card card accent-d"><div><div class="label">fraud multiplier</div><div class="value">&gt;$5</div></div><div class="note">совокупная стоимость на каждый $1 прямого fraud loss.</div></div>
+            </div>
+          </article>
+        </div>
+
+        <div class="trend-timeline" style="margin-top:14px">
+          <article class="card trend"><div class="num">01</div><div><h3>AI fraud становится baseline-риском</h3><p>Liveness и anti-deepfake должны стать headline product, а не второстепенным модулем.</p></div></article>
+          <article class="card trend"><div class="num">02</div><div><h3>Synthetic identities выходят за пределы банков</h3><p>21% first-party fraud cases в 2025 использовали synthetic identities; нужна связка document authenticity, liveness, face match, data checks, device/risk signals и sanctions/profile checking.</p></div></article>
+          <article class="card trend"><div class="num">03</div><div><h3>Identity становится lifecycle capability</h3><p>Проверка нужна не только на открытии аккаунта, но и для re-authentication, high-risk transactions, withdrawals и periodic re-verification.</p></div></article>
+          <article class="card trend"><div class="num">04</div><div><h3>Remote onboarding закрепляется регуляторно</h3><p>FATF, EBA, AMLR с применением с 10 июля 2027 года и CBUAE усиливают спрос на defensible control stack.</p></div></article>
+          <article class="card trend"><div class="num">05</div><div><h3>Platformization расширяет TAM</h3><p>5.855B mobile subscribers, глобальный e-commerce $33.9T и рост fintech/digital lending превращают NeuroVision в trust layer for platforms.</p></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="segments">
+      <div class="shell">
+        <div class="section-head">
+          <h2>Карта сегментов</h2>
+          <p>Для каждого сегмента собраны JTBD, риски без решения, ЛПР, KPI и цикл сделки. Оценка приоритета является визуальной интерпретацией текста исследования, а не новой внешней метрикой.</p>
+        </div>
+        <div class="segment-layout">
+          <aside class="card segment-list" id="segmentList"></aside>
+          <article class="card segment-detail" id="segmentDetail"></article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="shell">
+        <div class="section-head">
+          <h2>География экспансии</h2>
+          <p>Исследование выделяет GCC/UAE и selective EU как лучшие международные окна, но с разными go-to-market упаковками.</p>
+        </div>
+        <div class="geo-grid" id="geoGrid"></div>
+      </div>
+    </section>
+
+    <section id="channels">
+      <div class="shell">
+        <div class="section-head">
+          <h2>Каналы и первые гипотезы</h2>
+          <p>Каналы сравниваются по качеству лидов и вероятности SQL: отдельно видны quick wins, trust-heavy активности и долгие compounding-каналы.</p>
+        </div>
+        <div class="tabs" id="channelTabs"></div>
+        <div class="channel-board">
+          <article class="card channel-bars" id="channelBars"></article>
+          <aside class="card filter-note">
+            <h3>Что запускать первым</h3>
+            <div class="priority-list">
+              <div class="priority"><div><b>High-intent Search + comparison pages</b><span>Самый быстрый путь к SQL из спроса buy/replace/compliance-now.</span></div></div>
+              <div class="priority"><div><b>5 сегментных landing pages</b><span>Crypto, fintech, gambling, digital lending/MFO и marketplaces продаются по JTBD, а не по features.</span></div></div>
+              <div class="priority"><div><b>Webinar + lead magnet bundle</b><span>AMLR, MiCA и deepfakes собирают buying committee и поднимают trust.</span></div></div>
+              <div class="priority"><div><b>Vendor-switch benchmark offer</b><span>Зрелый спрос часто приходит от команд, которые уже хотят заменить текущего вендора.</span></div></div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section id="details">
+      <div class="shell">
+        <div class="section-head">
+          <h2>Детальный анализ</h2>
+          <p>Второй уровень информации сохранен в таблицах и раскрывающихся блоках: продуктовая ценность, role map, возражения, конкуренты, контент и 90-дневный план.</p>
+        </div>
+
+        <details open>
+          <summary>Продукт, бизнес-ценность и KPI</summary>
+          <div class="details-body">
+            <div class="table-wrap"><table id="valueTable"></table></div>
+            <p><b>Core KPI для маркетинга и sales enablement:</b> time-to-approve, approval/pass rate, verification completion rate, manual review share, cost per approved customer, fraud rate at onboarding, first 30-day bad-user ratio, compliance exceptions per audit, support tickets related to verification, re-verification success rate.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>ЛПР, страхи и аргументы</summary>
+          <div class="details-body"><div class="table-wrap"><table id="roleTable"></table></div></div>
+        </details>
+
+        <details>
+          <summary>30 клиентских возражений и отработка</summary>
+          <div class="details-body"><div class="table-wrap"><table id="objectionTable"></table></div></div>
+        </details>
+
+        <details>
+          <summary>Конкурентная матрица и дифференциация</summary>
+          <div class="details-body">
+            <div class="table-wrap"><table id="competitorTable"></table></div>
+            <div class="grid-3" style="margin-top:14px">
+              <div class="card method-item"><b>Speed-to-launch и economics</b><p>One-day integration, API/SDK, pay-as-you-go, from $0.25 и три попытки в цене одной проверки.</p></div>
+              <div class="card method-item"><b>On-prem и local data fit</b><p>Особенно важно для regulated markets, РФ/СНГ и клиентов с data residency требованиями.</p></div>
+              <div class="card method-item"><b>Conversion + compliance</b><p>Позиционирование: быстрый compliant onboarding, который не убивает performance marketing.</p></div>
+              <div class="card method-item"><b>CIS/RU database advantage</b><p>Локальные проверки по ФССП, налоговой, бюро кредитных историй, телефонам и другим источникам.</p></div>
+              <div class="card method-item"><b>Anti-deepfake wedge</b><p>Liveness/anti-spoof performance стоит продвигать отдельно, а не прятать как модуль.</p></div>
+              <div class="card method-item"><b>Trust/legal pack</b><p>Для ЕС критичны corporate structure, security/legal pack, data residency story и reference cases вне РФ.</p></div>
+            </div>
+          </div>
+        </details>
+
+        <details>
+          <summary>Контентные кластеры, ICP, офферы, лид-магниты и 90 дней</summary>
+          <div class="details-body">
+            <div class="grid-2">
+              <div><h3>ТОП-5 ICP</h3><div class="priority-list" id="icpList"></div></div>
+              <div><h3>ТОП-10 офферов</h3><div class="priority-list" id="offerList"></div></div>
+            </div>
+            <h3>Контентные кластеры</h3>
+            <div class="table-wrap"><table id="contentTable"></table></div>
+            <h3>Быстрые победы на горизонте 90 дней</h3>
+            <div class="pill-list" id="winsList"></div>
+            <h3>Маркетинговые риски</h3>
+            <div class="pill-list" id="risksList"></div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section id="methodology">
+      <div class="shell">
+        <div class="section-head">
+          <h2>Методология и ограничения</h2>
+          <p>Исследование является desk research и GTM-анализом, а не статистическим опросом клиентов. Это важно для корректного чтения выводов.</p>
+        </div>
+        <div class="grid-3 method-list">
+          <article class="card method-item"><b>Источник данных</b><p>Публичные страницы NeuroVision, рыночные отчеты, регуляторные документы, конкурентные страницы и вторичные обзоры pricing.</p></article>
+          <article class="card method-item"><b>Период</b><p>Используются актуальные рыночные оценки и регуляторные события до 2026 года, прогнозы в основном до 2030-2031 годов.</p></article>
+          <article class="card method-item"><b>Размер выборки</b><p>Customer survey sample size не указан. Сегментные TAM местами заменены broader market proxy, что явно отмечено в исследовании.</p></article>
+          <article class="card method-item"><b>Ограничения pricing</b><p>У многих конкурентов цены quote-based или не раскрыты; цифры из comparison-сайтов нужно считать ориентиром.</p></article>
+          <article class="card method-item"><b>Ограничения ЕС</b><p>Для vendor с российским происхождением возможны delays на sanctions/commercial due diligence и public procurement restrictions.</p></article>
+          <article class="card method-item"><b>Что не выдумывалось</b><p>Не добавлены новые метрики продаж, конверсий или revenue uplift. Priority score в сегментах визуализирует текстовую оценку, а не внешний датасет.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="full-report">
+      <div class="shell">
+        <div class="section-head">
+          <h2>Полный отчет</h2>
+          <p>Исходный Markdown приложен рядом со страницей и встроен ниже как проверочный слой: весь текст исследования сохранен без сокращений.</p>
+        </div>
+        <iframe class="source-frame" src="research.md" title="Полный Markdown отчет"></iframe>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="shell">Итог: NeuroVision стоит строить GTM как revenue-protecting trust infrastructure for digital onboarding, а не как AI biometric company.</div>
+  </footer>
+
+  <script>
+    const markets = [
+      { name: "Identity Verification", now: 14.34, future: 29.32, cagr: "15.4%", note: "2025 → 2030" },
+      { name: "KYC Software", now: 2.93, future: 15.81, cagr: "20.8%", note: "2021 → 2030" },
+      { name: "Fraud Detection & Prevention", now: 32.0, future: 65.68, cagr: "15.5%", note: "2025 → 2030" }
+    ];
+
+    const segments = [
+      { name: "Банки", proxy: "Global banking net income $1.3T в 2025; KYC/IDV - критичный инфраструктурный слой.", jtbd: "Digital account opening, optimization of retail onboarding, снижение manual review, подготовка к AMLR/EBA remote onboarding.", pain: "Дорогой FTE-heavy KYC, long TAT, audit findings, regulatory remediation.", buyers: "CEO/COO, Head of Retail, Head of Risk, Compliance, AML, CTO/CISO, Procurement.", kpi: "Approval TAT, drop-off, exception rate, audit findings, fraud at onboarding.", cycle: "6-12+ месяцев", scores: [5,5,2,4] },
+      { name: "МФО", proxy: "Microfinance $496.9B к 2030; digital lending platforms $44.49B к 2030.", jtbd: "Быстро принимать клиента без офиса, бороться с first-party fraud и document fraud.", pain: "Рост дефолтов от плохой идентификации, promo abuse, ручная нагрузка.", buyers: "CEO, CRO/Risk, Product, Collections/Risk Ops, CTO.", kpi: "Cost per issued loan, approval speed, bad rate early delinquency, fraud loss.", cycle: "1-3 месяца", scores: [4,5,5,5] },
+      { name: "Финтех", proxy: "Fintech market growth +$1.029T в 2026-2030 по Technavio.", jtbd: "Выход на новые рынки, wallet/card launch, embedded finance, KYC at scale.", pain: "CAC сгорает в onboarding, растет fraud, лицензирование тормозится.", buyers: "Founder/CEO, COO, Head of Product, Compliance, CTO.", kpi: "Pass rate, CAC payback, verified-user ratio, launch speed.", cycle: "1-4 месяца", scores: [5,4,5,5] },
+      { name: "Криптобиржи", proxy: "High adoption markets: India, US, Pakistan, Vietnam, Brazil; MiCA стандартизировал CASP в ЕС.", jtbd: "CASP authorization, KYC/AML/Travel Rule readiness, борьба с mule accounts и sanctions exposure.", pain: "Потери на enforcement, frozen operations, blocked market entry.", buyers: "Founder/CEO, Compliance/MLRO, Head of Risk, Fraud, Product.", kpi: "Time to verify, sanctions hit handling, fraudulent account rate, market-entry readiness.", cycle: "1-4 месяца", scores: [5,5,5,5] },
+      { name: "Криптообменники", proxy: "Тот же драйвер, меньше штат и выше sensitivity к cost/speed.", jtbd: "Быстрый documentary KYC + liveness без тяжелой enterprise-интеграции.", pain: "Ручной KYC не масштабируется, высокий sanctions risk.", buyers: "Founder, Operations, Compliance, CTO.", kpi: "Cost per check, pass rate, time-to-cash, fraud rejection rate.", cycle: "2-8 недель", scores: [5,4,5,4] },
+      { name: "Betting", proxy: "Sports betting: $100.9B в 2024, $187.39B к 2030.", jtbd: "KYC before deposit/withdrawal, возрастной контроль, self-exclusion, duplicate account control.", pain: "Bonus abuse, underage risk, regulator complaints, affiliate traffic waste.", buyers: "CEO/GM, Head of Compliance, Fraud, Payments, Product.", kpi: "FTD-to-KYC completion, withdrawal fraud, bonus abuse loss.", cycle: "1-3 месяца", scores: [5,5,5,5] },
+      { name: "Gambling", proxy: "Gambling market +$369.1B from 2026-2030; online gambling US $22.19B к 2030.", jtbd: "Betting use cases плюс account sharing, affiliate fraud, VIP risk.", pain: "Licence risk, higher fraud, high support/ops burden.", buyers: "COO, Compliance, Fraud, Payments, CTO.", kpi: "KYC completion, false reject, support ticket rate, regulator readiness.", cycle: "1-4 месяца", scores: [5,5,5,5] },
+      { name: "Маркетплейсы", proxy: "Global e-commerce market $33.9T in 2025.", jtbd: "Seller onboarding, high-risk payout verification, fraud rings, trust & safety.", pain: "Fake sellers, refund fraud, abuse, payout leakage, reputational damage.", buyers: "GM Marketplace, Trust & Safety, Risk, Payments, Product, CTO.", kpi: "Seller activation rate, fraud GMV, payout loss, trust metrics.", cycle: "1-4 месяца", scores: [4,4,5,4] },
+      { name: "Сервисы аренды", proxy: "Short-term rental platform $142.6B in 2024 to $263.4B by 2030.", jtbd: "Host/guest verification, contract signing, deposit release, anti-impersonation.", pain: "Property damage disputes, fake listings, payout disputes, legal exposure.", buyers: "CEO, Head of Operations, Trust & Safety, Product, Legal.", kpi: "Booking fraud rate, host activation, chargebacks, claims disputes.", cycle: "1-3 месяца", scores: [3,4,5,3] },
+      { name: "Страхование", proxy: "Digital insurance platform $148.16B in 2025 to $256.71B by 2030.", jtbd: "Remote policy issuance, claims verification, prevention of identity fraud in claims.", pain: "Claims leakage, manual KYC, onboarding friction, bad CX.", buyers: "COO, Claims Director, CDO/Product, Risk, Compliance.", kpi: "Quote-to-bind conversion, claims fraud rate, SLA.", cycle: "3-6 месяцев", scores: [4,4,3,3] },
+      { name: "Телеком", proxy: "5.86B unique mobile subscribers globally in Q2 2026.", jtbd: "eSIM/SIM registration, remote KYC, fraud control for prepaid/postpaid, reseller verification.", pain: "SIM-fraud, compliance issues, store dependency, support load.", buyers: "COO, Digital Director, Fraud, Security, Product, CIO.", kpi: "eSIM activation conversion, fraud rate, KYC completion, retail cost reduction.", cycle: "2-6 месяцев", scores: [4,4,3,3] },
+      { name: "HR-tech", proxy: "HR Tech $42.34B in 2025 to $77.74B by 2031.", jtbd: "Remote hiring, identity proofing before contract or exam, workforce onboarding.", pain: "Fake candidates, credential fraud, compliance risk in remote work.", buyers: "Founder/CEO, Head of Product, Security, HR Ops, Legal.", kpi: "Verified candidate ratio, time-to-hire, fraud incidents.", cycle: "1-3 месяца", scores: [2,3,5,2] },
+      { name: "Delivery", proxy: "Gig economy tech platforms около $485B in 2025, $538.84B in 2026.", jtbd: "Courier/driver onboarding, re-verification, anti-account-sharing.", pain: "Safety incidents, courier fraud, insurance exposure, support burden.", buyers: "COO, Ops, Risk, Product, Trust & Safety.", kpi: "Courier activation time, fraud/safety incidents, manual support load.", cycle: "1-3 месяца", scores: [3,4,5,3] },
+      { name: "Образование", proxy: "Online education от $180B к 2030 до $564.8B к 2030 в разных отчетах.", jtbd: "Student identity verification for exams, certificates, financial aid, minor protection.", pain: "Exam cheating, credential misuse, payment fraud.", buyers: "Founder/CEO, Head of Product, Academic Integrity, Security.", kpi: "Verified exam sessions, completion rate, certificate trust.", cycle: "1-3 месяца", scores: [2,3,5,2] },
+      { name: "Digital Services", proxy: "SaaS $317.5B in 2025; cloud computing $1.2949T in 2025.", jtbd: "High-risk signup, creator payouts, age gating, account recovery, B2B marketplace trust.", pain: "Fake accounts, spam, abuse, payment loss, weak trust layer.", buyers: "Founder/CEO, Head of Growth, Trust & Safety, Fraud, Product.", kpi: "Verified signup rate, abuse rate, support tickets, payout risk.", cycle: "2-8 недель", scores: [2,4,5,3] }
+    ];
+
+    const geos = [
+      { rank: "01", name: "UAE / GCC", why: "MENA fintech growth, CBUAE digital identification CDD guidelines.", sell: "Fintech, wallets, digital banks, insurance, crypto, marketplaces.", barrier: "Trust, local competition, regional hosting." },
+      { rank: "02", name: "Selective EU", why: "AMLR с 10 июля 2027, MiCA, EBA remote onboarding.", sell: "Crypto/CASP, fintech, payments, selected banks, gambling.", barrier: "Procurement, competition, sanctions/commercial due diligence." },
+      { rank: "03", name: "CIS / Central Asia", why: "On-prem, RU/CIS docs, local DB checks, data localization sensitivity.", sell: "Banks, MFO, telecom, marketplaces, gov-adjacent services.", barrier: "Ниже чеки, возможная inertia рынка." },
+      { rank: "04", name: "Turkey / CEE / Balkans", why: "Bridge markets между EU и MENA, высокая digital onboarding потребность.", sell: "Fintech, lending, gambling, marketplaces.", barrier: "Нужны local partnerships и localized trust references." },
+      { rank: "05", name: "Africa через партнерства", why: "Fintech, telecom и digital onboarding growth, high need for identity rails.", sell: "Telecom, mobile money, fintech, education.", barrier: "Локальные specialists и country-by-country complexity." }
+    ];
+
+    const channels = [
+      ["Google Search","Быстро","Средняя/высокая","Средняя","Очень высокое","Высокая","Лучший канал под intent buy/replace/compliance-now"],
+      ["LinkedIn Ads","Быстро","Высокая","Средняя","Среднее/высокое","Средняя","Хорош для ABM, слабее для cold demand capture"],
+      ["Meta Ads","Быстро","Средняя","Средняя","Низкое/среднее","Низкая","Remarketing и cheap awareness, не core SQL engine"],
+      ["YouTube","Средне","Средняя","Средняя","Низкое/среднее","Низкая","Education + retargeting, слабее direct SQL"],
+      ["Telegram","Быстро","Низкая/средняя","Средняя","Среднее","Низкая/средняя","Полезен для СНГ/MENA-комьюнити"],
+      ["Cold Email","Быстро","Низкая","Средняя/высокая","Среднее/высокое","Средняя","Работает с сильной сегментацией и trigger-based lists"],
+      ["LinkedIn Outreach","Быстро","Низкая/средняя","Высокая","Среднее/высокое","Средняя","Хорош под niche ABM"],
+      ["SEO","Медленно","Средняя","Высокая","Высокое","Средняя/высокая","Лучший compounding channel"],
+      ["Вебинары","Средне","Средняя","Средняя","Высокое","Высокая","Сильны для compliance-heavy ICP"],
+      ["Партнерства","Средне","Низкая/средняя","Высокая","Очень высокое","Высокая","SI, compliance consultancies, core banking, PSP, legal firms"],
+      ["Конференции","Средне","Высокая","Высокая","Высокое","Средняя/высокая","Нужна pre-booked meeting strategy"],
+      ["Product Hunt","Быстро","Низкая","Низкая","Низкое","Низкая","Почти не нужен для regulated B2B IDV"],
+      ["Clutch","Средне","Средняя","Низкая","Среднее/высокое","Средняя","Social proof и replacement buyers"],
+      ["G2","Средне","Средняя","Низкая","Высокое","Средняя/высокая","Comparison surface и trust proof"]
+    ];
+
+    const valueRows = [
+      ["Дистанционный онбординг", "OCR/документы, face match, liveness, anti-fraud, AML screening", "Брошенные регистрации, дольше TAT, выше CAC", "Рост completed onboarding, сокращение TAT, revenue capture"],
+      ["Снижение fraud", "Фальшивые документы, screens, printouts, deepfakes, spoofing", "Фейковые аккаунты, бонус-абьюз, мулы, account farming", "Снижение fraud-losses, chargeback/bonus abuse"],
+      ["AML/KYC compliance", "Sanctions/PEP/watchlists, биометрия, отчеты", "Штрафы, remediation, рост compliance headcount", "Снижение compliance cost, audit readiness"],
+      ["Автоматизация проверки", "API/SDK, auto-decisioning, reports, external DB checks", "FTE growth, очереди ручных проверок, slow SLA", "Ниже cost per approved user, выше throughput"],
+      ["Conversion без ослабления risk", "Быстрый flow, три попытки, гибкая настройка шагов", "Жесткий KYC съедает marketing budget", "Выше registration-to-approval, меньше retry friction"],
+      ["Passwordless auth", "Face-based authentication после KYC", "ATO, credential stuffing, friction", "Ниже ATO-risk, лучше UX"],
+      ["Географическая экспансия", "200+/240+ стран, 90+ языков, документы", "Vendor fragmentation", "Быстрее launch, меньше integration sprawl"],
+      ["Privacy/local deployment", "On-prem/cloud, хранение на стороне клиента", "Сложнее data residency fit", "Выход в regulated sectors"]
+    ];
+
+    const roleRows = [
+      ["CEO","Рост выручки, новый рынок, unit economics","Штрафы, репутационный кризис, slow growth","Снижает риск крупных потерь и ускоряет revenue capture"],
+      ["Founder","Запуск и scale, investor story","Сгорание CAC, хаос в ops","One API, быстрый pilot, pay-as-you-go"],
+      ["COO","SLA, throughput, cost/FTE","Ручные очереди, рост headcount","Меньше ручной проверки, короче SLA"],
+      ["CPO","UX, conversion, customer journey","Drop-off от сложного KYC","Гибкие шаги и меньше лишних retry"],
+      ["CTO","Интеграция, security, maintainability","Долгая интеграция, нестабильный API","Быстрая интеграция и data-residency options"],
+      ["Head of Product","Onboarding funnel, approval rate","False rejects, плохой UX","Влияние на pass rate и completion rate"],
+      ["Head of Risk","Fraud losses, policy control","Deepfakes, mules, synthetic IDs","Document + liveness + AML + anti-fraud"],
+      ["Risk Manager","Rule tuning и case work","Слишком много ручных алертов","Меньше noise, explainability, отчеты"],
+      ["Compliance Officer","AML/KYC, audit trails","EBA/AMLR/CBUAE mismatch","Документированные проверки и continuous screening"],
+      ["AML Officer","Screening, watchlists, PEP/sanctions","Missed hits, remediation","Screening и re-screening в одном контуре"],
+      ["Head of Security","Identity assurance, data protection","Spoofing, privacy incidents","Liveness + anti-spoofing + encryption + on-prem"],
+      ["Head of Fraud Prevention","Loss reduction, fraud analytics","Promo abuse, account farming, ATO","Блокирует bad users, не ломая good users"]
+    ];
+
+    const objections = [
+      ["Стоимость","Слишком дорого за одну проверку","Перевести в cost per approved user и fraud multiplier"],
+      ["Стоимость","Мы уже платим другому вендору","Считать switching ROI: pass rate, retry rate, manual review, fraud leakage"],
+      ["Стоимость","Нужен cheaper option","Pilot на одном use case или country rollout"],
+      ["Стоимость","Не готовы к annual commitment","Pay-as-you-go / pilot / phased rollout"],
+      ["Интеграция","Интеграция займет слишком много времени","Integration plan: sandbox, SDK, pilot milestones"],
+      ["Интеграция","Нет свободных разработчиков","Hosted flow / white-label / implementation sprint"],
+      ["Интеграция","Сложно встроить в mobile app","Mobile SDK, fallback flows, A/B rollout"],
+      ["Интеграция","Не хотим ломать текущий onboarding","Progressive rollout и shadow mode"],
+      ["Безопасность","Куда пойдут биометрические данные?","Data residency, on-prem, encryption, storage policy"],
+      ["Безопасность","Не хотим хранить vectors у третьей стороны","Privacy-first architecture и локальное хранение"],
+      ["Безопасность","Single point of failure","SLA, failover, fallback manual review"],
+      ["Безопасность","Нужен audit trail","Отчеты, reasons, traceability"],
+      ["Качество","Много low-quality photos/docs","Coverage и тест на исторических данных клиента"],
+      ["Качество","Плохое освещение и слабые устройства","Device QA, adaptive flows, benchmark pilot"],
+      ["Качество","Deepfakes все равно обойдут","Multi-layer approach без обещания магии"],
+      ["Качество","Нестандартные документы и языки","Broad coverage и кастомизация templates"],
+      ["Ошибки","False rejects убьют конверсию","Risk-based thresholds, retry logic, manual fallback"],
+      ["Ошибки","Good user не пройдет","Re-verification и manual override policy"],
+      ["Ошибки","Боимся черного ящика","Explainable decisions и tuning в pilot"],
+      ["Ошибки","Нужен low latency","Performance как UX и anti-abandonment strategy"],
+      ["Compliance","Регулятор может не принять remote KYC","FATF, EBA, AMLR/AMLD6, CBUAE и legal review"],
+      ["Compliance","Нужен local data processing","On-prem / local storage / regional hosting"],
+      ["Compliance","GDPR/152-ФЗ/242-ФЗ","Compliance mapping до procurement"],
+      ["Compliance","AML должен быть continuous","Lifecycle screening и re-checks"],
+      ["Замена","Сложно мигрировать","Migration sprint, dual-run, shadow benchmark"],
+      ["Замена","Контракт еще действует","Pilot для нового сегмента, рынка или fraud use case"],
+      ["Замена","Не хотим менять ownership","Augmentation, а не re-org"],
+      ["Сроки","Нужно вчера","Fixed launch plan 2-4 недели для pilot"],
+      ["Сроки","Сначала business case","ROI calculator, benchmark template, CFO criteria"],
+      ["Юридические","За data incident отвечать нам","DPA, security pack, retention policy, liability scope"]
+    ];
+
+    const competitors = [
+      ["Sumsub","Full-cycle KYC/KYB/AML/fraud platform","Широкая платформа, crypto/fintech fit","Compliance-first perception","Basic $1.35/check; Compliance $1.85/check"],
+      ["Veriff","IDV with strong UX/configurable flows","Conversion narrative, liveness, white-label","Меньше platform breadth","Essential $0.80/check, $49/mo min"],
+      ["Onfido by Entrust","Enterprise IDV inside security stack","Enterprise brand, document+selfie, compliance","Quote-based, heavy for mid-market","Quote-based"],
+      ["iDenfy","Cost-oriented IDV/KYC/AML","Pay-per-success, free trial","Слабее global enterprise narrative","AML add-ons from +$0.25 / +$0.20"],
+      ["Jumio","AI global identity platform","Enterprise brand, lifecycle identity, AML","Premium, sales-led","Not disclosed"],
+      ["Persona","Flexible identity infrastructure","Flexibility, US product/infra position","Сложнее для слабых product/eng teams","Starter from $250/mo"],
+      ["Trulioo","Global data-driven KYC/KYB","195+ countries, 450 data sources","Less transparent pricing","Custom/quote"],
+      ["AU10TIX","IDV + biometrics + AML + fraud","Fraud-prevention framing","Custom pricing","Enterprise/custom"],
+      ["Shufti Pro","Global IDV/KYB/KYI/AML","Public pricing, global compliance","Less premium perception","Free tier; usage-based"],
+      ["IDnow","European trust/compliance platform","Europe/regulation fit, analytics","EU-centric perception","Quote-based"],
+      ["Mitek","Digital fraud defense and IDV","US enterprise history","Enterprise-first","Quote-based"],
+      ["TrustDecision","AI decision engine","Risk decisions, fraud/chargeback","Менее identity-first","Mostly not disclosed"],
+      ["Smile ID","Africa-focused IDV and AML","Regional specialization, gov DB checks","Geographically limited","Contact sales"],
+      ["VisionLabs","Face recognition/user identification","Biometric heritage, local fit","Не full KYC suite","Not public"],
+      ["Smart Engines","Document OCR/verification","Strong OCR and local docs","Не full-stack","Not public"],
+      ["Regula","Document verification lifecycle","Document expertise, templates, on-prem","May need pairing","Not public"],
+      ["Oz Forensics","Liveness + anti-deepfake","Strong anti-spoof story","Point-solution-like","Not public"],
+      ["Biometric.Vision","eKYC/facial verification","Vertical messaging","Less international brand","Pricing unclear"]
+    ];
+
+    const contentRows = [
+      ["50 SEO-тем", "AMLR/MiCA, AI fraud, conversion, vertical finance, crypto, gambling, telecom/platforms, vendor migration, docs/data, security/privacy."],
+      ["30 LinkedIn-тем", "Trends, operator economics, vertical angles, product proof, executive POV, customer journey."],
+      ["20 вебинаров", "RegTech, fraud, ops/ROI, vertical webinars для MFO, gambling, marketplaces."],
+      ["20 лид-магнитов", "ROI calculator, migration checklist, AMLR/MiCA checklist, deepfake scorecard, RFP template, data residency checklist."],
+      ["20 кейсов", "Сокращение onboarding time/manual review, bonus abuse, fake sellers, provider migration, deepfake attacks, compliance audit."]
+    ];
+    const icps = [
+      "EU or GCC crypto platform, 50-500 FTE, 10k-300k checks/month, preparing for MiCA/AMLR or local licensing.",
+      "Mid-market fintech/wallet/EMI, 30-300 FTE, paid acquisition, KYC влияет на CAC payback.",
+      "Digital lender/MFO в СНГ/Центральной Азии: on-prem/local DB checks и быстрый anti-fraud ROI.",
+      "Licensed iGaming operator with cross-border traffic, affiliate-led acquisition and bonus abuse pain.",
+      "Marketplace or rental platform with seller/host/courier verification and payout risk."
+    ];
+    const offers = [
+      "14-дневный pilot с KPI: pass rate, TAT, manual review, fraud catch.",
+      "Сравним ваш текущий KYC flow с NeuroVision на ваших данных.",
+      "Миграция с текущего вендора без остановки онбординга.",
+      "Anti-deepfake audit текущего selfie/liveness flow.",
+      "Crypto onboarding package for MiCA/CASP readiness.",
+      "Gambling KYC pack: age + identity + withdrawal verification.",
+      "MFO package: fast onboarding + document fraud + local DB checks.",
+      "Marketplace trust pack: seller verification + payout re-checks.",
+      "On-prem / local data deployment consultation.",
+      "Executive ROI workshop: сколько стоит текущий KYC."
+    ];
+    const wins = ["5 отраслевых landing pages","Cost of manual KYC calculator","3 case narratives: crypto, gambling, MFO","Legal/security/compliance pack","4 webinars: AMLR, MiCA, deepfakes, gambling","Google Search bottom-of-funnel","Switch-from-current-vendor campaign","Partner list: advisors, SI, PSP, core banking","Role-based one-pagers","Shadow benchmark program"];
+    const risks = ["Размытое позиционирование","Слишком широкий ICP","Feature list вместо business case","Слабый trust/legal pack","Нет независимых proof points","Dependence only on outbound","Недооценка sanctions/commercial due diligence в ЕС","Лобовая конкуренция с enterprise incumbents"];
+
+    function makeTable(id, headers, rows) {
+      const table = document.getElementById(id);
+      table.innerHTML = `<thead><tr>${headers.map(h => `<th>${h}</th>`).join("")}</tr></thead><tbody>${rows.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join("")}</tr>`).join("")}</tbody>`;
+    }
+
+    function scoreValue(value) {
+      return { "Очень высокое": 5, "Высокая": 5, "Высокое": 5, "Средняя/высокая": 4, "Среднее/высокое": 4, "Средняя": 3, "Среднее": 3, "Низкая/средняя": 2, "Низкое/среднее": 2, "Низкая": 1, "Низкое": 1 }[value] || 3;
+    }
+
+    function renderMarkets() {
+      const max = Math.max(...markets.map(m => m.future));
+      document.getElementById("marketChart").innerHTML = markets.map(m => `
+        <div class="market-row">
+          <div class="name">${m.name}<br><small>${m.note}, CAGR ${m.cagr}</small></div>
+          <div class="market-duo">
+            <div class="future" style="width:${m.future / max * 100}%"></div>
+            <div class="now" style="width:${m.now / max * 100}%"></div>
+          </div>
+          <div class="numbers">$${m.now}B → $${m.future}B</div>
+        </div>`).join("");
+    }
+
+    function renderSegments(selected = 0) {
+      const list = document.getElementById("segmentList");
+      list.innerHTML = segments.map((s, i) => `<button class="segment-button ${i === selected ? "active" : ""}" data-segment="${i}"><span>${s.name}</span><small>${s.cycle}</small></button>`).join("");
+      const s = segments[selected];
+      const labels = ["Регуляторика", "Fraud cost", "Скорость сделки", "ROI fit"];
+      document.getElementById("segmentDetail").innerHTML = `
+        <h3>${s.name}</h3>
+        <div class="proxy">${s.proxy}</div>
+        <div class="score-strip">${labels.map((label, i) => `<div class="score"><label>${label}</label><div class="track"><div class="fill" style="width:${s.scores[i] * 20}%"></div></div></div>`).join("")}</div>
+        <div class="detail-grid">
+          <div class="detail-box"><span>Когда ищут решение / JTBD</span><p>${s.jtbd}</p></div>
+          <div class="detail-box"><span>Если не решать</span><p>${s.pain}</p></div>
+          <div class="detail-box"><span>ЛПР и комитет</span><p>${s.buyers}</p></div>
+          <div class="detail-box"><span>KPI и триггер покупки</span><p>${s.kpi}</p></div>
+          <div class="detail-box"><span>Типичный цикл сделки</span><p>${s.cycle}</p></div>
+          <div class="detail-box"><span>Messaging</span><p>${segmentMessaging(s.name)}</p></div>
+        </div>`;
+      list.querySelectorAll("button").forEach(btn => btn.addEventListener("click", () => renderSegments(Number(btn.dataset.segment))));
+    }
+
+    function segmentMessaging(name) {
+      const map = {
+        "Банки": "перевести KYC из cost center в conversion engine",
+        "МФО": "одобрять быстрее, не впуская fraud",
+        "Финтех": "запускаться в новых странах без vendor zoo",
+        "Криптобиржи": "получить compliant onboarding до прихода регулятора",
+        "Криптообменники": "быстрый KYC без enterprise-тяжести",
+        "Betting": "не терять FTD и не пустить underage/abuse",
+        "Gambling": "защитить withdrawal, age verification и bonus economics",
+        "Маркетплейсы": "строить trust layer для двусторонней платформы"
+      };
+      return map[name] || "строить trust layer вокруг high-risk identity events";
+    }
+
+    function renderGeos() {
+      document.getElementById("geoGrid").innerHTML = geos.map(g => `<article class="card geo-card"><div class="rank">${g.rank}</div><h3>${g.name}</h3><p><b>Почему:</b> ${g.why}</p><p><b>Что продавать:</b> ${g.sell}</p><p><b>Барьеры:</b> ${g.barrier}</p></article>`).join("");
+    }
+
+    function renderChannels(filter = "all") {
+      const tabs = [
+        ["all", "Все каналы"],
+        ["quick", "Быстрый запуск"],
+        ["sql", "Высокая SQL"],
+        ["trust", "Trust-heavy"]
+      ];
+      document.getElementById("channelTabs").innerHTML = tabs.map(([id, label]) => `<button class="tab ${id === filter ? "active" : ""}" data-filter="${id}">${label}</button>`).join("");
+      const filtered = channels.filter(c => {
+        if (filter === "quick") return c[1] === "Быстро";
+        if (filter === "sql") return c[5].includes("Высок");
+        if (filter === "trust") return ["Вебинары", "Партнерства", "Конференции", "G2", "Clutch", "SEO"].includes(c[0]);
+        return true;
+      });
+      document.getElementById("channelBars").innerHTML = filtered.map(c => {
+        const score = (scoreValue(c[4]) + scoreValue(c[5])) / 10 * 100;
+        return `<div class="channel-row"><b>${c[0]}</b><div class="channel-bar"><span style="width:${score}%"></span></div><small>${c[5]}</small></div><small style="color:#667085">${c[6]}</small>`;
+      }).join("");
+      document.querySelectorAll("#channelTabs .tab").forEach(btn => btn.addEventListener("click", () => renderChannels(btn.dataset.filter)));
+    }
+
+    function renderLists() {
+      document.getElementById("icpList").innerHTML = icps.map(i => `<div class="priority"><div><span>${i}</span></div></div>`).join("");
+      document.getElementById("offerList").innerHTML = offers.map(i => `<div class="priority"><div><span>${i}</span></div></div>`).join("");
+      document.getElementById("winsList").innerHTML = wins.map(i => `<span class="pill">${i}</span>`).join("");
+      document.getElementById("risksList").innerHTML = risks.map(i => `<span class="pill">${i}</span>`).join("");
+    }
+
+    renderMarkets();
+    renderSegments();
+    renderGeos();
+    renderChannels();
+    renderLists();
+    makeTable("valueTable", ["Бизнес-задача", "Что делает NeuroVision", "Что происходит без решения", "Влияние"], valueRows);
+    makeTable("roleTable", ["Роль", "Основные задачи и KPI", "Боли и страхи", "Самый сильный аргумент"], roleRows);
+    makeTable("objectionTable", ["Группа", "Возражение", "Как отрабатывать"], objections);
+    makeTable("competitorTable", ["Конкурент", "Позиционирование", "Сильные стороны", "Слабые стороны", "Публичная цена"], competitors);
+    makeTable("contentTable", ["Формат", "Кластеры и темы"], contentRows);
+  </script>
+</body>
+</html>
